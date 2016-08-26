@@ -38,23 +38,25 @@ class DmozSpider(scrapy.Spider):
                                 meta = {'cookiejar' : response.meta['cookiejar']},
                                 dont_filter = True
                                 )]
-            
+            print response.body
     
     def parse(self,response):
-        
+        print "parse..."
         for href in response.css("album > div.panel-body.m-t > div > div:nth-child(1) > section > div > div > a::attr('href')"):
             ##album > div.panel-body.m-t > div > div:nth-child(1) > section > div > div > a.text-black.text-lg
             url=response.urljoin(response.url,href.extract())
-            #for url_cookie in enumerate(url):
-            #yield scrapy.Request(url,meta = {cookie : i},callback=parse_main)
-            yield scrapy.Request(url,callback=self.parse_middle)
+
+            print url
+            yield scrapy.Request(url,cookies ="cna=hmgbEAsrcEsCAXPDi3k/QFtI" ,headers = self.headers,callback=self.parse_middle)
     
     def parse_middle(self,response):
+        print "in parse_middle"
         for href_middle in response.css("body > div.container.m-t-md > div > div.col-md-8 > section > ul > a::attr('href')"):
             url_middle =response.css(response.url,href_middle.extract())
-            #for url_cookie in enumerate(url_middle):
-            #yield scrapy.Request(url,meta = {cookie : i},callback=parse_main)
-            yield scrapy.Request(url_middle,callback=self.parse_main)
+            #for i,url_cookie in enumerate(url_middle):
+            #yield scrapy.Request(url,meta = {cookie : i},callback=self.parse_main)
+            print url_middle
+            yield scrapy.Request(url_middle,cookies ="cna=hmgbEAsrcEsCAXPDi3k/QFtI" ,headers = self.headers, callback=self.parse_main)
 
     def parse_main(self, response):
         print response.body
